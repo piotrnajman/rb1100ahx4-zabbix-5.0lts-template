@@ -12,6 +12,9 @@
    - Temperature
    - Voltage
 2. Items Resources
+   - CPU Core (discovery)
+     - Core Utilisation (item prototype)
+     - Core Utilisation (trigger prototype)
    - CPU Frequency
    - HDD Free
    - HDD Total
@@ -33,4 +36,9 @@
    - Graph prototypes
      - Packets on interface
      - Traffic on interface
+4. Triggers
+   - Disk space is critically low
+   - Disk space is low
+   - High memory utilization
+   - Router has been restarted
 

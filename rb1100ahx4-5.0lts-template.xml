@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>5.0</version>
-    <date>2021-08-23T11:57:57Z</date>
+    <date>2021-08-24T10:31:25Z</date>
     <groups>
         <group>
             <name>Templates/Network devices</name>
@@ -284,6 +284,14 @@ Author : Piotr Najman (c) 2021 GPLv3</description>
                             <params>0.01</params>
                         </step>
                     </preprocessing>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}&lt;10m</expression>
+                            <name>Router has been restarted (uptime &lt; 10m)</name>
+                            <priority>WARNING</priority>
+                            <manual_close>YES</manual_close>
+                        </trigger>
+                    </triggers>
                 </item>
                 <item>
                     <name>Voltage</name>
@@ -307,10 +315,39 @@ Author : Piotr Najman (c) 2021 GPLv3</description>
             </items>
             <discovery_rules>
                 <discovery_rule>
+                    <name>CPU</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>discovery[{#CPUID},iso.3.6.1.2.1.25.3.2.1.1]</snmp_oid>
+                    <key>mikrotik4.cpu.discovery</key>
+                    <delay>1h</delay>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Core {#CPUID} Utilisation</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>iso.3.6.1.2.1.25.3.3.1.2.{#CPUID}</snmp_oid>
+                            <key>mikrotik4.cpu.util.[{#CPUID}]</key>
+                            <units>%</units>
+                            <applications>
+                                <application>
+                                    <name>Resources</name>
+                                </application>
+                            </applications>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{min(5m)}&gt;{$CPU.UTIL.CRIT}</expression>
+                                    <name>CPU Core {#CPUID} (over {$CPU.UTIL.CRIT}% for 5m)</name>
+                                    <priority>HIGH</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+                <discovery_rule>
                     <name>Interfaces</name>
                     <type>SNMP_AGENT</type>
                     <snmp_oid>discovery[{#IFID}, iso.3.6.1.2.1.2.2.1.1,{#IFNAME}, iso.3.6.1.2.1.2.2.1.2]</snmp_oid>
                     <key>mikrotik4.net.if.discovery</key>
+                    <delay>1h</delay>
                     <item_prototypes>
                         <item_prototype>
                             <name>{#IFNAME} discards-in</name>
@@ -319,7 +356,7 @@ Author : Piotr Najman (c) 2021 GPLv3</description>
                             <key>mikrotik.if.discardsin.[{#IFID}]</key>
                             <application_prototypes>
                                 <application_prototype>
-                                    <name>Traffic</name>
+                                    <name>Traffic on interface</name>
                                 </application_prototype>
                             </application_prototypes>
                         </item_prototype>
@@ -330,7 +367,7 @@ Author : Piotr Najman (c) 2021 GPLv3</description>
                             <key>mikrotik.if.discardsout.[{#IFID}]</key>
                             <application_prototypes>
                                 <application_prototype>
-                                    <name>Traffic</name>
+                                    <name>Traffic on interface</name>
                                 </application_prototype>
                             </application_prototypes>
                         </item_prototype>
@@ -341,7 +378,7 @@ Author : Piotr Najman (c) 2021 GPLv3</description>
                             <key>mikrotik.if.errorout.[{#IFID}]</key>
                             <application_prototypes>
                                 <application_prototype>
-                                    <name>Traffic</name>
+                                    <name>Traffic on interface</name>
                                 </application_prototype>
                             </application_prototypes>
                         </item_prototype>
@@ -352,7 +389,7 @@ Author : Piotr Najman (c) 2021 GPLv3</description>
                             <key>mikrotik.if.errorsin.[{#IFID}]</key>
                             <application_prototypes>
                                 <application_prototype>
-                                    <name>Traffic</name>
+                                    <name>Traffic on interface</name>
                                 </application_prototype>
                             </application_prototypes>
                         </item_prototype>
@@ -363,7 +400,7 @@ Author : Piotr Najman (c) 2021 GPLv3</description>
                             <key>mikrotik.if.packetout.[{#IFID}]</key>
                             <application_prototypes>
                                 <application_prototype>
-                                    <name>Traffic</name>
+                                    <name>Traffic on interface</name>
                                 </application_prototype>
                             </application_prototypes>
                             <preprocessing>
@@ -380,7 +417,7 @@ Author : Piotr Najman (c) 2021 GPLv3</description>
                             <key>mikrotik4.if.bytesin.[{#IFID}]</key>
                             <application_prototypes>
                                 <application_prototype>
-                                    <name>Traffic</name>
+                                    <name>Traffic on interface</name>
                                 </application_prototype>
                             </application_prototypes>
                             <preprocessing>
@@ -397,7 +434,7 @@ Author : Piotr Najman (c) 2021 GPLv3</description>
                             <key>mikrotik4.if.bytesout.[{#IFID}]</key>
                             <application_prototypes>
                                 <application_prototype>
-                                    <name>Traffic</name>
+                                    <name>Traffic on interface</name>
                                 </application_prototype>
                             </application_prototypes>
                             <preprocessing>
@@ -414,7 +451,7 @@ Author : Piotr Najman (c) 2021 GPLv3</description>
                             <key>mikrotik4.net.if.packetsin.[{#IFID}]</key>
                             <application_prototypes>
                                 <application_prototype>
-                                    <name>Traffic</name>
+                                    <name>Traffic on interface</name>
                                 </application_prototype>
                             </application_prototypes>
                             <preprocessing>
@@ -503,7 +540,42 @@ Author : Piotr Najman (c) 2021 GPLv3</description>
                     </graph_prototypes>
                 </discovery_rule>
             </discovery_rules>
+            <macros>
+                <macro>
+                    <macro>{$CPU.UTIL.CRIT}</macro>
+                    <value>90</value>
+                </macro>
+                <macro>
+                    <macro>{$HDD.UTIL.CRIT}</macro>
+                    <value>90</value>
+                </macro>
+                <macro>
+                    <macro>{$HDD.UTIL.WAR}</macro>
+                    <value>80</value>
+                </macro>
+                <macro>
+                    <macro>{$MEM.UTIL.CRIT}</macro>
+                    <value>90</value>
+                </macro>
+            </macros>
         </template>
     </templates>
+    <triggers>
+        <trigger>
+            <expression>({RB1100AHx4:mikrotik4.hddused.min(5m)}/{RB1100AHx4:mikrotik4.hddtotal.last()})*100&gt;{$HDD.UTIL.CRIT}</expression>
+            <name>Disk space is critically low (used &gt; {$HDD.UTIL.CRIT}% for 5m)</name>
+            <priority>HIGH</priority>
+        </trigger>
+        <trigger>
+            <expression>({RB1100AHx4:mikrotik4.hddused.min(5m)}/{RB1100AHx4:mikrotik4.hddtotal.last()})*100&gt;{$HDD.UTIL.WARN}</expression>
+            <name>Disk space is low (used &gt; {$HDD.UTIL.WARN}% for 5m)</name>
+            <priority>AVERAGE</priority>
+        </trigger>
+        <trigger>
+            <expression>({RB1100AHx4:mikrotik4.memused.min(5m)}/{RB1100AHx4:mikrotik4.memtotal.last()})*100&gt;{$MEM.UTIL.CRIT}</expression>
+            <name>High memory utilization (&gt;{$MEMORY.UTIL.MAX}% for 5m)</name>
+            <priority>HIGH</priority>
+        </trigger>
+    </triggers>
 </zabbix_export>
 
