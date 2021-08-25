@@ -19,9 +19,11 @@
    - HDD Free
    - HDD Total
    - HDD Used
+   - HDD Utilisation
    - Memory Free
    - Memory Total
    - Memory Used
+   - Memory Utilisation
    - Uptime
 3. Interfaces (discovery)
    - Item prototypes
@@ -40,5 +42,9 @@
    - Disk space is critically low
    - Disk space is low
    - High memory utilization
+   - PSU voltage
    - Router has been restarted
+5. Graphs
+   - Memory and Storage Utilisation
+   - Voltages
 

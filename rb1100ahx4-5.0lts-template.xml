@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>5.0</version>
-    <date>2021-08-24T10:31:25Z</date>
+    <date>2021-08-25T09:33:52Z</date>
     <groups>
         <group>
             <name>Templates/Network devices</name>
@@ -103,6 +103,19 @@ Author : Piotr Najman (c) 2021 GPLv3</description>
                     </preprocessing>
                 </item>
                 <item>
+                    <name>HDD Utilisation</name>
+                    <type>CALCULATED</type>
+                    <key>mikrotik4.hddutil</key>
+                    <value_type>FLOAT</value_type>
+                    <units>%</units>
+                    <params>(last(mikrotik4.hddused)/last(mikrotik4.hddtotal))*100</params>
+                    <applications>
+                        <application>
+                            <name>Resources</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
                     <name>Memory Free</name>
                     <type>CALCULATED</type>
                     <key>mikrotik4.memfree</key>
@@ -152,6 +165,19 @@ Author : Piotr Najman (c) 2021 GPLv3</description>
                             <params>0.0009765625</params>
                         </step>
                     </preprocessing>
+                </item>
+                <item>
+                    <name>Memory Utilisation</name>
+                    <type>CALCULATED</type>
+                    <key>mikrotik4.memutil</key>
+                    <value_type>FLOAT</value_type>
+                    <units>%</units>
+                    <params>(last(mikrotik4.memused)/last(mikrotik4.memtotal))*100</params>
+                    <applications>
+                        <application>
+                            <name>Resources</name>
+                        </application>
+                    </applications>
                 </item>
                 <item>
                     <name>Power Consumption</name>
@@ -209,6 +235,13 @@ Author : Piotr Najman (c) 2021 GPLv3</description>
                             <params>0.1</params>
                         </step>
                     </preprocessing>
+                    <triggers>
+                        <trigger>
+                            <expression>{max(5)}&lt;{$PSU.VOLTAGE.MIN} or {min(5)}&gt;{$PSU.VOLTAGE.MAX}</expression>
+                            <name>Check PSU1 voltage (not in range  {$PSU.VOLTAGE.MIN}-{$PSU.VOLTAGE.MAX}V for 5m)</name>
+                            <priority>WARNING</priority>
+                        </trigger>
+                    </triggers>
                 </item>
                 <item>
                     <name>PSU2 Amperage</name>
@@ -247,6 +280,13 @@ Author : Piotr Najman (c) 2021 GPLv3</description>
                             <params>0.1</params>
                         </step>
                     </preprocessing>
+                    <triggers>
+                        <trigger>
+                            <expression>{max(5)}&lt;{$PSU.VOLTAGE.MIN} or {min(5)}&gt;{$PSU.VOLTAGE.MAX}</expression>
+                            <name>Check PSU2 voltage (not in range  {$PSU.VOLTAGE.MIN}-{$PSU.VOLTAGE.MAX}V for 5m)</name>
+                            <priority>WARNING</priority>
+                        </trigger>
+                    </triggers>
                 </item>
                 <item>
                     <name>Temperature</name>
@@ -557,6 +597,14 @@ Author : Piotr Najman (c) 2021 GPLv3</description>
                     <macro>{$MEM.UTIL.CRIT}</macro>
                     <value>90</value>
                 </macro>
+                <macro>
+                    <macro>{$PSU.VOLTAGE.MAX}</macro>
+                    <value>24.9</value>
+                </macro>
+                <macro>
+                    <macro>{$PSU.VOLTAGE.MIN}</macro>
+                    <value>24.0</value>
+                </macro>
             </macros>
         </template>
     </templates>
@@ -577,5 +625,61 @@ Author : Piotr Najman (c) 2021 GPLv3</description>
             <priority>HIGH</priority>
         </trigger>
     </triggers>
+    <graphs>
+        <graph>
+            <name>Memory and Storage Utilisation</name>
+            <show_work_period>NO</show_work_period>
+            <show_triggers>NO</show_triggers>
+            <graph_items>
+                <graph_item>
+                    <sortorder>1</sortorder>
+                    <color>1A7C11</color>
+                    <item>
+                        <host>RB1100AHx4</host>
+                        <key>mikrotik4.hddutil</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>2</sortorder>
+                    <color>F63100</color>
+                    <item>
+                        <host>RB1100AHx4</host>
+                        <key>mikrotik4.memutil</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+        <graph>
+            <name>Voltages</name>
+            <show_work_period>NO</show_work_period>
+            <show_triggers>NO</show_triggers>
+            <graph_items>
+                <graph_item>
+                    <sortorder>1</sortorder>
+                    <color>1A7C11</color>
+                    <item>
+                        <host>RB1100AHx4</host>
+                        <key>mikrotik4.psu1v</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>2</sortorder>
+                    <color>66BB6A</color>
+                    <item>
+                        <host>RB1100AHx4</host>
+                        <key>mikrotik4.psu2v</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>3</sortorder>
+                    <color>2774A4</color>
+                    <item>
+                        <host>RB1100AHx4</host>
+                        <key>mikrotik4.voltage</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+    </graphs>
 </zabbix_export>
 
