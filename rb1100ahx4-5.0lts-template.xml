@@ -12,7 +12,7 @@
             <template>RB1100AHx4</template>
             <name>RB1100AHx4</name>
             <description>SNMP template monitoring Mikrotik RB1100AHx4 devices.&#13;
-Author : Piotr Najman (c) 2021 GPLv3</description>
+Author : Piotr Najman (c) 2021 MIT License</description>
             <groups>
                 <group>
                     <name>Templates/Network devices</name>
